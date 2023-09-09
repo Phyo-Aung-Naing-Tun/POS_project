@@ -1,4 +1,3 @@
-import React from "react";
 import LogInForm from "../Components/LogInForm";
 
 const LogIn = () => {

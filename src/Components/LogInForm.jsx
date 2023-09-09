@@ -11,6 +11,9 @@ import { useForm } from "@mantine/form";
 import React from "react";
 import { useGetLogInMutation } from "../Redux/Api/authApi";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { getToken } from "../Redux/Slices/authSlice";
 
 const LogInForm = () => {
   const form = useForm({
@@ -20,6 +23,8 @@ const LogInForm = () => {
     },
   });
   const [getLogIn, { isLoading }] = useGetLogInMutation();
+  const nav = useNavigate();
+  const dispatch = useDispatch();
   return (
     <div className=" w-[325px] h-[448px] bg-white">
       <MantineProvider
@@ -51,8 +56,8 @@ const LogInForm = () => {
                 console.log(data);
 
                 if (data?.message === "login successfully") {
-                  Cookies.set("token", data.token);
-                  location.reload();
+                  dispatch(getToken(data?.token));
+                  nav("/");
                 } else {
                   alert(data?.message);
                 }
