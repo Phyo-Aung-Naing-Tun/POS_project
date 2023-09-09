@@ -1,6 +1,7 @@
 import {
   Checkbox,
   Group,
+  Loader,
   MantineProvider,
   Paper,
   PasswordInput,
@@ -9,15 +10,16 @@ import {
 import { useForm } from "@mantine/form";
 import React from "react";
 import { useGetLogInMutation } from "../Redux/Api/authApi";
+import Cookies from "js-cookie";
 
 const LogInForm = () => {
   const form = useForm({
     initialValues: {
-      userName: "",
+      email: "",
       password: "",
     },
   });
-  const [getLogIn] = useGetLogInMutation();
+  const [getLogIn, { isLoading }] = useGetLogInMutation();
   return (
     <div className=" w-[325px] h-[448px] bg-white">
       <MantineProvider
@@ -44,15 +46,26 @@ const LogInForm = () => {
           <form
             className=" flex flex-col gap-[30px]"
             onSubmit={form.onSubmit(async (values) => {
-              const data = await getLogIn(values);
-              console.log(data);
+              try {
+                const { data } = await getLogIn(values);
+                console.log(data);
+
+                if (data?.message === "login successfully") {
+                  Cookies.set("token", data.token);
+                  location.reload();
+                } else {
+                  alert(data?.message);
+                }
+              } catch (error) {
+                console.log(error);
+              }
             })}
           >
             <div className=" h-[65px] flex flex-col gap-[5px]">
               <label className=" text-[16px] tracking-wide  text-[#FFF]">
-                UserName
+                Email
               </label>
-              <TextInput radius={"4px"} {...form.getInputProps("userName")} />
+              <TextInput radius={"4px"} {...form.getInputProps("email")} />
             </div>
             <div className=" flex flex-col gap-[15px]">
               <div className=" h-[65px] flex flex-col gap-[5px]">
@@ -69,9 +82,10 @@ const LogInForm = () => {
                 <div className="flex items-center gap-[5px]">
                   <Checkbox
                     size={"xs"}
-                    {...form.getInputProps("termsOfService", {
-                      type: "checkbox",
-                    })}
+                    type="checkbox"
+                    // {...form.getInputProps("termsOfService", {
+                    //   type: "checkbox",
+                    // })}
                   />
                   <h4 className=" tracking-wide text-[12px] text-[#FFF]">
                     Remember Me
@@ -88,7 +102,7 @@ const LogInForm = () => {
                 className=" text-[#202124] text-[16px] rounded-[5px] font-bold w-full flex justify-center items-center h-[40px] py-[10px] mt-auto bg-[#8AB4F8]"
                 type="submit"
               >
-                LogIn
+                {isLoading ? <Loader color="gray" size="sm" /> : "LogIn"}
               </button>
             </Group>
           </form>
