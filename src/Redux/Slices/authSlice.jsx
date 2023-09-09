@@ -3,6 +3,7 @@ import Cookies from "js-cookie";
 
 const initialState = {
   token: "",
+  toggleForTheme: true,
 };
 export const authSlice = createSlice({
   name: "authSlice",
@@ -13,8 +14,11 @@ export const authSlice = createSlice({
 
       Cookies.set("token", payload);
     },
+    setToggle: (state) => {
+      state.toggleForTheme = !state.toggleForTheme;
+    },
   },
 });
 
-export const { getToken } = authSlice.actions;
+export const { getToken, setToggle } = authSlice.actions;
 export default authSlice.reducer;
